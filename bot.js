@@ -41,9 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
         addUserMessage(text);
         botInput.value = '';
 
+        showTypingIndicator();
+
         // Simple Keyword logic
         const lowerText = text.toLowerCase();
         setTimeout(() => {
+            removeTypingIndicator();
             if (lowerText.includes('flavor') || lowerText.includes('taste') || lowerText.includes('menu')) {
                 addBotMessage(botResponses.flavors);
             } else if (lowerText.includes('ship') || lowerText.includes('deliver') || lowerText.includes('cost')) {
@@ -53,7 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 addBotMessage(botResponses.default);
             }
-        }, 800);
+        }, 1500);
+    }
+
+    function showTypingIndicator() {
+        const div = document.createElement('div');
+        div.className = 'message bot-msg typing-indicator';
+        div.id = 'bot-typing';
+        div.innerHTML = '<span>.</span><span>.</span><span>.</span>';
+        messagesContainer.appendChild(div);
+        scrollToBottom();
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('bot-typing');
+        if (indicator) indicator.remove();
     }
 
     function addUserMessage(text) {
@@ -80,8 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.botResponse = (type) => {
         const response = botResponses[type] || botResponses.default;
         addUserMessage(document.querySelector(`[onclick="botResponse('${type}')"]`).textContent);
+        showTypingIndicator();
         setTimeout(() => {
+            removeTypingIndicator();
             addBotMessage(response);
-        }, 600);
+        }, 1000);
     };
 });

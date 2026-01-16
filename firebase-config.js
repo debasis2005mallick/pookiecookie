@@ -16,4 +16,5 @@ const firebaseConfig = {
 // This file simply defines the config.
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore(); // Initialize Firestore
 const googleProvider = new firebase.auth.GoogleAuthProvider();

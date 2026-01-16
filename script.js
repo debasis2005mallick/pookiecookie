@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCursor();
     setupAuthListeners(); // Initialize Auth Listeners
     setupIngredientsModal(); // Ingredients Modal
+    setupProductModal(); // Product Modal
+    setupBackToTop(); // Back to top
+    setupLazyLoading();
 
     // Checkout listener
     const checkoutBtn = document.getElementById('checkout-btn');
@@ -176,7 +179,13 @@ function setupEventListeners() {
     // Close menu when clicking a link
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
-            navLinks.classList.remove('active');
+            if (navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                const icon = mobileMenuBtn.querySelector('i');
+                icon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            }
         });
     });
 
@@ -265,11 +274,30 @@ function switchAuth(mode) {
 
 // --- Auth Logic (Firebase) ---
 
+function saveUserProfile(user) {
+    if (!user) return;
+
+    db.collection("users").doc(user.uid).set({
+        uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true })
+        .then(() => {
+            console.log("User profile saved successfully.");
+        })
+        .catch((error) => {
+            console.error("Error saving user profile:", error);
+        });
+}
+
 function handleGoogleLogin() {
     console.log("Attempting Google Login...");
     auth.signInWithPopup(googleProvider)
         .then((result) => {
             console.log("Logged in:", result.user);
+            saveUserProfile(result.user); // Save to Firestore
             document.getElementById('auth-overlay').classList.remove('open');
             showToast(`Welcome back, ${result.user.displayName} Pookie! 🍪`);
         })
@@ -397,13 +425,10 @@ function setupCursor() {
             // Dynamic Cursor Text
             if (target.classList.contains('btn-add')) {
                 cursor.textContent = 'ADD';
-                cursor.style.fontSize = '12px';
             } else if (target.classList.contains('ingredients-link')) {
                 cursor.textContent = 'INFO';
-                cursor.style.fontSize = '12px';
             } else if (target.closest('.product-card')) {
                 cursor.textContent = 'VIEW';
-                cursor.style.fontSize = '12px';
             } else {
                 cursor.textContent = '';
             }
@@ -639,10 +664,12 @@ function updateStickyBar(total, count) {
 
     if (count > 0) {
         bar.classList.add('visible');
+        document.body.classList.add('checkout-bar-visible');
         bar.querySelector('.sticky-items').textContent = `${count} item${count > 1 ? 's' : ''}`;
         bar.querySelector('.sticky-total').textContent = `₹${total.toFixed(0)}`;
     } else {
         bar.classList.remove('visible');
+        document.body.classList.remove('checkout-bar-visible');
     }
 }
 
@@ -727,5 +754,103 @@ function vibrate(ms) {
     if (navigator.vibrate) {
         navigator.vibrate(ms);
     }
+}
+
+// Custom Logic for UI Enhancements
+function setupProductModal() {
+    const overlay = document.getElementById('product-details-overlay');
+    const closeBtn = document.getElementById('close-product-modal');
+
+    // Event delegation for opening modal from card click
+    const grid = document.getElementById('product-grid');
+    if (grid) {
+        grid.addEventListener('click', (e) => {
+            const card = e.target.closest('.product-card');
+            const addBtn = e.target.closest('.btn-add');
+            const ingredientsLink = e.target.closest('.ingredients-link');
+
+            // Don't open modal if clicking add button or ingredients link
+            if (card && !addBtn && !ingredientsLink) {
+                const productIdMatch = card.querySelector('.btn-add').getAttribute('onclick').match(/\d+/);
+                if (productIdMatch) {
+                    openProductModal(parseInt(productIdMatch[0]));
+                }
+            }
+        });
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('open');
+        });
+    }
+}
+
+function openProductModal(id) {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const content = document.getElementById('product-modal-content');
+    content.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" class="modal-product-img">
+        <div class="modal-product-info">
+            <span class="modal-category">${product.category}</span>
+            <h2>${product.name}</h2>
+            <div class="product-rating">
+                ${getStars(product.rating)} <span>(${product.rating})</span>
+            </div>
+            <p class="modal-product-desc">${product.description}</p>
+            <div class="modal-product-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Price</span>
+                    <span class="stat-value">₹${product.price}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Rating</span>
+                    <span class="stat-value">${product.rating}/5</span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="addToCart(${product.id}); document.getElementById('product-details-overlay').classList.remove('open');">Add to Cart</button>
+        </div>
+    `;
+
+    const overlay = document.getElementById('product-details-overlay');
+    overlay.classList.add('open');
+
+    // Reset scroll position of the info section
+    const infoSection = content.querySelector('.modal-product-info');
+    if (infoSection) infoSection.scrollTop = 0;
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function setupBackToTop() {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    });
+
+    btn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+function setupLazyLoading() {
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        if (!img.hasAttribute('loading')) {
+            img.setAttribute('loading', 'lazy');
+        }
+    });
 }
 

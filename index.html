@@ -4,7 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pookie Cookie | Irresistibly Sweet</title>
+    <title>Pookie Cookie | Royal Indian Handcrafted Cookies & Nankhatais</title>
+    <meta name="description"
+        content="Experience the royal taste of India with Pookie Cookie. Handcrafted Nankhatais, Osmania Biscuits, and premium tea-time treats delivered to your doorstep.">
+    <meta name="keywords"
+        content="Pookie Cookie, Indian Cookies, Nankhatai, Osmania Biscuits, Handcrafted Cookies, Indian Bakery, Luxury Cookies">
+    <meta name="author" content="Pookie Cookie">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pookiecookie.co.in/">
+    <meta property="og:title" content="Pookie Cookie | Irresistibly Sweet Royal Indian Cookies">
+    <meta property="og:description"
+        content="Handcrafted Nankhatais, Osmania Biscuits, and Chai-time favorites. Fresh taste, honest baking, and royal luxury in every bite.">
+    <meta property="og:image" content="https://pookiecookie.co.in/assets/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://pookiecookie.co.in/">
+    <meta property="twitter:title" content="Pookie Cookie | Royal Indian Handcrafted Cookies">
+    <meta property="twitter:description"
+        content="Experience the royal taste of India with Pookie Cookie. Handcrafted Nankhatais and premium tea-time treats.">
+    <meta property="twitter:image" content="https://pookiecookie.co.in/assets/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,7 +62,7 @@
         <div class="container">
             <a href="#" class="brand">Pookie<span class="text-gold">Cookie</span></a>
 
-            <button class="mobile-menu-btn" id="mobile-menu-btn">
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Mobile Menu">
                 <i data-lucide="menu"></i>
             </button>
 
@@ -46,7 +70,7 @@
                 <a href="#shop">Cookies</a>
                 <a href="#about">Our Story</a>
                 <button class="login-btn" id="login-nav-btn">Login</button>
-                <button class="cart-btn" id="cart-btn">
+                <button class="cart-btn" id="cart-btn" aria-label="View Cart">
                     <i data-lucide="shopping-bag"></i>
                     <span class="cart-count">0</span>
                 </button>
@@ -58,7 +82,8 @@
     <!-- Auth Modal -->
     <div class="auth-overlay" id="auth-overlay">
         <div class="auth-modal">
-            <button class="close-auth" id="close-auth"><i data-lucide="x"></i></button>
+            <button class="close-auth" id="close-auth" aria-label="Close Authentication Modal"><i
+                    data-lucide="x"></i></button>
 
             <div class="auth-content">
                 <!-- Login Form -->
@@ -287,7 +312,7 @@
     <!-- Address Modal -->
     <div class="auth-overlay" id="address-overlay">
         <div class="auth-modal">
-            <button class="close-auth" id="close-address"><i data-lucide="x"></i></button>
+            + 000 <button class="close-auth" id="close-address"><i data-lucide="x"></i></button>
             <div class="auth-content">
                 <div style="text-align: center; margin-bottom: 2rem;">
                     <div
@@ -339,7 +364,21 @@
         </div>
     </div>
 
-    <!-- Ingredients Modal -->
+    <!-- Product Details Modal -->
+    <div class="auth-overlay" id="product-details-overlay">
+        <div class="auth-modal luxury-modal">
+            <button class="close-auth" id="close-product-modal" aria-label="Close Product Details"><i
+                    data-lucide="x"></i></button>
+            <div class="product-modal-content" id="product-modal-content">
+                <!-- Data injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="back-to-top" aria-label="Back to Top">
+        <i data-lucide="arrow-up"></i>
+    </button>
     <div class="auth-overlay" id="ingredients-overlay">
         <div class="auth-modal">
             <button class="close-auth" id="close-ingredients"><i data-lucide="x"></i></button>
@@ -371,6 +410,7 @@
     <!-- Firebase SDKs (Compat version for easiest drop-in) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <!-- Config -->
     <script src="firebase-config.js"></script>
